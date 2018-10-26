@@ -2,28 +2,30 @@ var express = require('express');
 var app = express();
 var route = require('./things.js');
 var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer();
 
-//Untuk parsing URL yang di encode
-app.use(bodyParser.urlencoded({extended: false}));
-
-//Untuk parsing json data
-app.use(bodyParser.json());
-
-//Load static file
-app.use(express.static('public'));
-
-app.set('view engine', 'pug');
-app.set('views','./views');
-
-app.get('/first', function(req, res){
-    res.render('first_view');
+app.get('/', function(req, res){
+    res.render('form');
 });
 
-app.use('/things', function(req, res, next){
-    console.log("Request diterima pada tanggal: " + Date.now());
-    next();
-})
+app.set('view engine', 'pug');
+app.set('views', './views');
 
-app.use('/', route);
+//Parsing application/json
+app.use(bodyParser.json());
+
+//Parsing application/xwww-
+app.use(bodyParser.urlencoded({extended: true}));
+//form-urlencoded
+
+//Parsing multipart/form-data
+app.use(upload.array());
+app.use(express.static('public'));
+
+app.post('/', function(req, res) {
+    console.log(req.body);
+    res.send("Receive your request");
+});
 
 app.listen(3000);
