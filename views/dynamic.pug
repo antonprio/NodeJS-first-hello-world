@@ -1,0 +1,10 @@
+html
+   head
+      title=name
+   body
+      h1=name
+      if user.name == 'test'
+         p Hello #{user.name} Selamat datang di pug
+         img(src="/staticimg.jpg", alt="Testing Image")
+      else
+         a(href = url) Find me here
