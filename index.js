@@ -18,6 +18,10 @@ app.get('/', function(req, res){
     res.render('form');
 });
 
+app.get('/person', function(req, res){
+    res.render('person');
+});
+
 app.set('view engine', 'pug');
 app.set('views', './views');
 
@@ -31,6 +35,42 @@ app.use(bodyParser.urlencoded({extended: true}));
 //Parsing multipart/form-data
 app.use(upload.array());
 app.use(express.static('public'));
+
+app.post('/person', function(req, res) {
+    var personInfo = req.body; //Untuk melihat informasi yang di parsing
+    console.log(req.body);
+
+    
+    if(!personInfo.name || !personInfo.age || !personInfo.nationality) {
+        res.render('show_message', {
+            message: "Undefined attributes",
+            type: "error"
+        });
+    }
+    else {
+        var newPerson = new Person({
+            name: personInfo.name,
+            age: personInfo.age,
+            nationality: personInfo.nationality
+        });
+
+        newPerson.save(function(err, Person) {
+            if(err) {
+                res.render('show_message', {
+                    message: "Database Error",
+                    type: "error"
+                });
+            }
+            else {
+                res.render('show_message', {
+                    message: "New Person Added",
+                    type: "success",
+                    person: personInfo
+                });
+            }
+        });
+    }
+});
 
 app.post('/', function(req, res) {
     console.log(req.body);
