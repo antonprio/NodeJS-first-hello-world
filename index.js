@@ -7,13 +7,6 @@ var upload = multer();
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/my_db');
 
-var personSchema = mongoose.Schema({
-    name: String,
-    age: Number,
-    nationality: String
-});
-var Person = mongoose.model('Person', personSchema);
-
 app.get('/', function(req, res){
     res.render('form');
 });
@@ -35,6 +28,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 //Parsing multipart/form-data
 app.use(upload.array());
 app.use(express.static('public'));
+
+var personSchema = mongoose.Schema({
+    name: String,
+    age: Number,
+    nationality: String
+});
+var Person = mongoose.model('Person', personSchema);
 
 app.post('/person', function(req, res) {
     var personInfo = req.body; //Untuk melihat informasi yang di parsing
@@ -76,5 +76,35 @@ app.post('/', function(req, res) {
     console.log(req.body);
     res.send("Receive your request");
 });
+
+app.get('/people', function(req, res) {
+    Person.find(function(err, response) {
+        res.json(response);
+    });
+});
+
+//Update data using put
+app.put('/people/:id', function(req, res) {
+    Person.findByIdAndUpdate(req.params.id, req.body, function(err, response) {
+        if(err) {
+            res.json({
+                message: "Error Update person with id" + req.params.id
+            });
+        }
+        res.json(response);
+    });
+});
+
+//Delete data using remove
+app.delete('/people/delete', function(req, res) {
+    Person.remove({
+        name: "test"
+    }, function(err, response) {
+        if(err) {
+            res.json({message: "Error delete data"});
+        }
+        res.json(response);
+    });
+})
 
 app.listen(3000);
