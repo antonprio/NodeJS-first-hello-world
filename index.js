@@ -4,6 +4,15 @@ var route = require('./things.js');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var upload = multer();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/my_db');
+
+var personSchema = mongoose.Schema({
+    name: String,
+    age: Number,
+    nationality: String
+});
+var Person = mongoose.model('Person', personSchema);
 
 app.get('/', function(req, res){
     res.render('form');
